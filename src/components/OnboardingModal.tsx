@@ -52,10 +52,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
             </div>
             <div>
               <h4 className="text-sm font-semibold text-stone-900 flex items-center gap-1.5">
-                Add Your Experience or Prompt
+                Enter Your Name & Speaking Status
               </h4>
               <p className="text-xs text-stone-600 leading-relaxed mt-0.5">
-                Type rough notes about what you did in class, or click <strong>&quot;I&#39;m Feeling Lucky&quot;</strong> to auto-generate a contextual variation matching Muhammed Shifan&#39;s submitted PDF format.
+                Type your full name and select whether you got a chance to introduce yourself to the class. If yes, tap keyword chips like <strong>#SoftwareEngineer</strong> or <strong>#ProblemSolving</strong> to personalize your experience.
               </p>
             </div>
           </div>
@@ -66,10 +66,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
             </div>
             <div>
               <h4 className="text-sm font-semibold text-stone-900 flex items-center gap-1.5">
-                Verify the Identical Department Layout
+                Review Your Unique Personalized Report
               </h4>
               <p className="text-xs text-stone-600 leading-relaxed mt-0.5">
-                Your report automatically formats into the exact 3-paragraph structure with the official blue frame, Times New Roman typography, and maroon activity header.
+                Your report automatically generates unique paragraphs grounded in our 50-student class activity, formatted with the official navy border (<code className="font-mono text-stone-700">#234994</code>), maroon heading, and Times New Roman typography in A4 Portrait.
               </p>
             </div>
           </div>
@@ -83,7 +83,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
                 Download PDF Ready for Submission
               </h4>
               <p className="text-xs text-stone-600 leading-relaxed mt-0.5">
-                Click <strong>&quot;Download PDF&quot;</strong> to export a high-resolution, print-ready document with identical margins and borders across our entire batch.
+                Click <strong>&quot;Download PDF&quot;</strong> to export a high-resolution, print-ready A4 Portrait document with identical margins and borders across our entire batch.
               </p>
             </div>
           </div>

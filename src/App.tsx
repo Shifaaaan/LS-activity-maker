@@ -8,6 +8,7 @@ import { StepBar } from './components/StepBar.tsx';
 import { PreviewToolbar } from './components/PreviewToolbar.tsx';
 import { OnboardingModal } from './components/OnboardingModal.tsx';
 import { exportElementToPdf } from './utils/pdfExport.ts';
+import { cleanStudentNotesAndTags, formatTopicsToStudentPhrase } from './utils/textUtils.ts';
 
 export default function App() {
   const [reportData, setReportData] = useState<ReportData>(INITIAL_TEMPLATE_REPORT);
@@ -109,13 +110,17 @@ export default function App() {
   // Call backend API to format the prompt according to exact PDF style
   const handleGenerate = async (overridePrompt?: string) => {
     const activePrompt = (overridePrompt ?? prompt).trim();
-    if (!activePrompt) {
-      showNotification('Please enter a prompt or notes about your session first.', 'info');
+    
+    // Warn if name is empty
+    if (!reportData.studentName.trim()) {
+      showNotification('Please enter your name in the Name field first.', 'info');
+      // Scroll to name card if needed
+      document.getElementById('student-name-input')?.focus();
       return;
     }
 
     setIsGenerating(true);
-    showNotification('Formatting your report according to department guidelines...', 'info');
+    showNotification('Generating personalized report grounded in class activity...', 'info');
 
     try {
       const res = await fetch('/api/generate', {
@@ -131,6 +136,9 @@ export default function App() {
           batch: reportData.batch,
           subjectCode: reportData.subjectCode,
           subjectName: reportData.subjectName,
+          gotChance: reportData.gotChance,
+          topicsDiscussed: reportData.topicsDiscussed,
+          customDetails: activePrompt,
         }),
       });
 
@@ -147,22 +155,34 @@ export default function App() {
         }));
         setHasGenerated(true);
         setCurrentStep(2);
-        showNotification('Report formatted to exact department layout!', 'success');
+        showNotification('Personalized report generated and formatted in A4 Portrait!', 'success');
       }
     } catch (err) {
-      console.warn('API error, applying client-side template formatting:', err);
-      const cleanPrompt = activePrompt.endsWith('.') ? activePrompt : activePrompt + '.';
+      console.warn('API error, applying client-side dynamic generation:', err);
+      
+      const rawDate = reportData.date || '22-09-2026';
+      const dateStr = rawDate.includes('September') ? rawDate : (rawDate === '22-09-2026' ? '22nd September 2026' : rawDate);
+      const spoke = reportData.gotChance === true;
+      const cleanedTopics = (reportData.topicsDiscussed || []).map(t => cleanStudentNotesAndTags(t)).filter(Boolean);
+      const topicsStr = formatTopicsToStudentPhrase(cleanedTopics);
+      const cleanedPrompt = cleanStudentNotesAndTags(activePrompt);
+      const customNote = cleanedPrompt ? ` I also mentioned ${cleanedPrompt.replace(/^I\s+(also\s+)?(talked|spoke|mentioned)\s+about\s+/i, '')}.` : '';
+
+      const fallbackParagraphs = [
+        `On ${dateStr}, our Ma’am conducted an exciting group formation and self-introduction activity for our class. Out of 59 students in total, 50 were present and divided into 6 groups of roughly 10 members according to our roll-number ranges (1–10, 11–20, 21–30, 31–40, 41–50, 51–59). We were given around 10 to 15 minutes to sit together with our group members, practice our self-introductions in English, and prepare for 3 students to be picked from each group to speak in front of the class.`,
+        spoke
+          ? `I was really thrilled and a little nervous when Ma’am selected me as one of the three students from our group to speak! When my turn came, I stood in front of all 50 classmates and introduced myself. I talked about ${topicsStr}.${customNote} Practicing with my roll-number friends just before going up gave me a lot of courage and helped me speak clearly without getting stuck.`
+          : `Even though I wasn't among the three students picked to speak on stage, I had a really great time with my group. For 15 minutes, all of us in our roll-number group sat together and took turns practicing our introductions in English.${customNote} We helped each other correct mistakes, laughed together, and cheered for our three friends who went up to the front.`,
+        `Through this activity, I learned many valuable things from our Ma’am. She explained that we should always be honest about our real weaknesses instead of pretending to be perfect, which is very helpful for future job interviews. She also told us not to start with "Myself..." when introducing ourselves. Overall, it was a super fun and interactive session that helped reduce my stage fear and made me much more confident to speak in English.`
+      ];
+
       setReportData(prev => ({
         ...prev,
-        paragraphs: [
-          `On ${prev.date}, our Ma’am conducted a group formation and self-introduction activity for Batch-B. There were 50 students present, divided into groups of 10. We were given 15–20 minutes for preparation, after which 3 students were randomly selected from each group to introduce themselves.`,
-          `During this activity, ${cleanPrompt} Our group members supported one another, practiced delivery pacing, and refined our introduction statements.`,
-          `Through this activity, I learned that we should not begin an introduction with “Myself”; instead, we should use phrases like “I am” or “My name is.” I also learned how to present our strengths and weaknesses appropriately, especially in interviews. Overall, the activity improved my understanding of effective self-introduction and increased my confidence through practice.`
-        ]
+        paragraphs: fallbackParagraphs.map(p => cleanStudentNotesAndTags(p))
       }));
       setHasGenerated(true);
       setCurrentStep(2);
-      showNotification('Formatted into 3-paragraph academic reflection structure.', 'success');
+      showNotification('Formatted into balanced 3-paragraph academic reflection.', 'success');
     } finally {
       setIsGenerating(false);
     }
@@ -171,16 +191,38 @@ export default function App() {
   // "I am feeling lucky" button handler
   const handleLucky = async () => {
     setIsGenerating(true);
-    showNotification('Generating an authentic variation using template PDF context...', 'info');
+    showNotification('Auto-generating an authentic personalized student report...', 'info');
+
+    // Sample student profiles for quick discovery
+    const sampleNames = ['Abhishek S', 'Ananya Nair', 'Rahul R', 'Kavya Krishna', 'Fathima Salim', 'Siddharth M'];
+    const randomName = reportData.studentName.trim() || sampleNames[Math.floor(Math.random() * sampleNames.length)];
+    const randomGotChance = Math.random() > 0.4; // 60% chance spoke, 40% chance group prep
+    const sampleTopics = randomGotChance 
+      ? [['Software Engineer', 'Problem Solving', 'Strengths'], ['Entrepreneur', 'Creativity', 'Future Goals'], ['Communication', 'Technology', 'Hobbies']][Math.floor(Math.random() * 3)]
+      : [];
+    const generatedPromptText = randomGotChance
+      ? `I spoke about ${sampleTopics.join(', ')}, my coding interests, and practicing clear pacing without hesitation.`
+      : 'Participated actively in group practice and helped peers with phrasing.';
+
+    setPrompt(generatedPromptText);
+    setReportData(prev => ({
+      ...prev,
+      studentName: randomName,
+      gotChance: randomGotChance,
+      topicsDiscussed: sampleTopics
+    }));
 
     try {
-      const res = await fetch('/api/lucky', {
+      const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          studentName: reportData.studentName,
-          date: reportData.date,
+          studentName: randomName,
+          date: reportData.date || '22-09-2026',
           activityTitle: reportData.activityTitle,
+          gotChance: randomGotChance,
+          topicsDiscussed: sampleTopics,
+          customDetails: generatedPromptText,
         }),
       });
 
@@ -192,28 +234,37 @@ export default function App() {
       if (result.paragraphs && Array.isArray(result.paragraphs)) {
         setReportData(prev => ({
           ...prev,
-          paragraphs: result.paragraphs,
+          studentName: randomName,
+          gotChance: randomGotChance,
+          topicsDiscussed: sampleTopics,
+          paragraphs: result.paragraphs.map((p: string) => cleanStudentNotesAndTags(p)),
           activityTitle: result.activityTitle || prev.activityTitle,
         }));
-        if (result.generatedPrompt) {
-          setPrompt(result.generatedPrompt);
-        }
         setHasGenerated(true);
         setCurrentStep(2);
-        showNotification('Lucky variation generated and loaded into preview!', 'success');
+        showNotification(`Generated report for ${randomName}!`, 'success');
       }
     } catch (err) {
       console.warn('Lucky API fallback:', err);
-      const luckyVariation = [
-        `On ${reportData.date}, our Ma’am conducted a group formation and self-introduction activity for Batch-B. There were 50 students present, divided into groups of 10. We were given 15–20 minutes for preparation, after which 3 students were randomly selected from each group to introduce themselves.`,
-        `I was chosen from our group to deliver my introduction before the entire class. Speaking to my peers, I shared my technical interests, passion for engineering, and career aspirations. The initial rehearsal with our group gave me the poise to speak clearly without hesitation.`,
-        `Through this activity, I learned the critical value of non-verbal communication, including eye contact and open posture. Ma’am gave helpful guidance on voice projection and avoiding casual phrasing like “Myself”. Overall, the exercise enhanced my confidence and readiness for formal interactions.`
+      const rawDate = reportData.date || '22-09-2026';
+      const dateStr = rawDate.includes('September') ? rawDate : (rawDate === '22-09-2026' ? '22nd September 2026' : rawDate);
+      const fallbackParagraphs = [
+        `On ${dateStr}, our Ma’am conducted an exciting group formation and self-introduction activity for our class. There were 50 students present out of 59, and we were divided into 6 groups based on our roll numbers (1–10, 11–20, 21–30, 31–40, 41–50, and 51–59). We were given around 10 to 15 minutes to sit together with our group members, practice our self-introductions in English, and prepare for 3 of us being selected to speak in front of the whole class.`,
+        randomGotChance
+          ? `I was really excited and slightly nervous when Ma’am selected me as one of the three students from our group to speak! When my turn came, I stood up in front of all 50 classmates and introduced myself. I talked about wanting to become a Software Engineer, my hobbies, and my strengths and weaknesses. Practicing with my roll-number friends just before going up gave me a lot of courage and helped me speak clearly without getting stuck.`
+          : `Even though I wasn't among the three students picked to go up on stage, I had a really great time in our group. For the 15 minutes of preparation time, all of us in our roll-number group sat together and took turns practicing our self-introductions in English. We helped each other correct small mistakes, laughed together, and cheered enthusiastically when our three group friends went up to the front to speak.`,
+        `Through this activity, I learned many valuable things from our Ma’am. She explained that we should always be honest about our real weaknesses instead of pretending to be perfect, because admitting areas where we need improvement shows genuine self-awareness in job interviews. She also reminded us not to start with "Myself..." and gave us great tips on how to speak with confidence. It was a really enjoyable session that helped reduce my stage fear and made me excited for upcoming activities.`
       ];
-      setReportData(prev => ({ ...prev, paragraphs: luckyVariation }));
-      setPrompt('Selected from group to deliver introduction before the class, shared background and goals, received feedback on posture and avoiding "Myself".');
+      setReportData(prev => ({ 
+        ...prev, 
+        studentName: randomName,
+        gotChance: randomGotChance,
+        topicsDiscussed: sampleTopics,
+        paragraphs: fallbackParagraphs.map(p => cleanStudentNotesAndTags(p))
+      }));
       setHasGenerated(true);
       setCurrentStep(2);
-      showNotification('Template variation loaded into preview!', 'success');
+      showNotification(`Lucky report generated for ${randomName}!`, 'success');
     } finally {
       setIsGenerating(false);
     }
@@ -222,10 +273,10 @@ export default function App() {
   const handleResetToTemplate = () => {
     setReportData({
       ...INITIAL_TEMPLATE_REPORT,
-      orientation: reportData.orientation || 'landscape'
+      orientation: reportData.orientation || 'portrait'
     });
-    setPrompt('Rehearsed introduction with group of 10 students, was not picked for main stage, learned to avoid "Myself" and structure strengths and weaknesses for interviews.');
-    showNotification('Restored to original submitted PDF template content.', 'info');
+    setPrompt('');
+    showNotification('Reset form fields to blank.', 'info');
   };
 
   // Download PDF
@@ -244,7 +295,7 @@ export default function App() {
         documentRef.current,
         fileName,
         (status) => setDownloadStatus(status),
-        reportData.orientation || 'landscape'
+        reportData.orientation || 'portrait'
       );
 
       if (success) {

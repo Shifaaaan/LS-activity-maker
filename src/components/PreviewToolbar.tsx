@@ -128,6 +128,24 @@ export const PreviewToolbar: React.FC<PreviewToolbarProps> = ({
           {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-stone-500" />}
           <span className="hidden sm:inline">{copied ? 'Copied' : 'Copy'}</span>
         </button>
+
+        {/* Active Color Indicator */}
+        <div 
+          className="hidden md:inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-mono bg-stone-50 border border-stone-200 text-stone-600"
+          title="Active Document Styling"
+        >
+          <span 
+            className="w-2.5 h-2.5 rounded-full border border-black/10 shrink-0" 
+            style={{ backgroundColor: reportData.borderColor || '#234994' }} 
+            title={`Border: ${reportData.borderColor || '#234994'}`}
+          />
+          <span 
+            className="w-2.5 h-2.5 rounded-full border border-black/10 shrink-0" 
+            style={{ backgroundColor: reportData.headingColor || '#800020' }} 
+            title={`Heading: ${reportData.headingColor || '#800020'}`}
+          />
+          <span className="font-serif">Times New Roman.ttf</span>
+        </div>
       </div>
 
       {/* Right side: Export & Print actions */}

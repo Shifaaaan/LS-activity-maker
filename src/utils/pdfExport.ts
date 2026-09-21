@@ -5,10 +5,15 @@ export async function exportElementToPdf(
   element: HTMLElement,
   fileName: string = 'College_Activity_Report.pdf',
   onProgress?: (status: string) => void,
-  orientation: 'landscape' | 'portrait' = 'landscape'
+  orientation: 'landscape' | 'portrait' = 'portrait'
 ): Promise<boolean> {
   try {
     onProgress?.('Preparing document for high-resolution render...');
+
+    // Wait for exact Times New Roman TTF font to be loaded in DOM
+    if (document.fonts) {
+      await document.fonts.ready;
+    }
 
     const isLandscape = orientation === 'landscape';
     // A4 dimensions in mm

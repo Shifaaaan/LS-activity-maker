@@ -9,6 +9,13 @@ export interface ReportData {
   activityTitle: string;
   paragraphs: string[];
   orientation?: 'landscape' | 'portrait';
+  gotChance?: boolean | null;
+  topicsDiscussed?: string[];
+  customDetails?: string;
+  borderColor?: string;
+  headingColor?: string;
+  title1Color?: string;
+  title2Color?: string;
 }
 
 export interface ActivityPreset {
@@ -19,3 +26,4 @@ export interface ActivityPreset {
   subjectName: string;
   defaultPrompt: string;
 }
+

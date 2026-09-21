@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-academic {
+    font-family: 'Times New Roman', Times, 'EB Garamond', Georgia, serif;
+  }
+}
+
+/* Academic Document & Print Styles */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  
+  html, body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-document-container {
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    max-width: 210mm !important;
+    margin: 0 auto !important;
+  }
+
+  .report-page-sheet {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    margin: 0 !important;
+  }
+}

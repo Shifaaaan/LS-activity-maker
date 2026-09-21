@@ -1,0 +1,7 @@
+{
+  "name": "College Report Generator",
+  "description": "Standardized academic activity report generator for College of Engineering Karunagappally students with identical typography, border, and PDF export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

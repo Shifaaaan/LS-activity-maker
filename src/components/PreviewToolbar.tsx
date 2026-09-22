@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, Printer, Copy, Check, ZoomIn, ZoomOut, Edit3, Eye, RotateCw } from 'lucide-react';
+import { Download, Printer, Copy, Check, ZoomIn, ZoomOut, Edit3, Eye, RotateCw, Sparkles, PenLine } from 'lucide-react';
 import { ReportData } from '../types.ts';
 
 interface PreviewToolbarProps {
@@ -12,6 +12,9 @@ interface PreviewToolbarProps {
   onZoomChange: (newZoom: number) => void;
   reportData: ReportData;
   onToggleOrientation: () => void;
+  onRegenerate?: () => void;
+  isGenerating?: boolean;
+  onToggleTeacherSignature?: () => void;
 }
 
 export const PreviewToolbar: React.FC<PreviewToolbarProps> = ({
@@ -24,9 +27,18 @@ export const PreviewToolbar: React.FC<PreviewToolbarProps> = ({
   onZoomChange,
   reportData,
   onToggleOrientation,
+  onRegenerate,
+  isGenerating = false,
+  onToggleTeacherSignature,
 }) => {
   const [copied, setCopied] = useState(false);
   const isLandscape = reportData.orientation === 'landscape';
+
+  const rawStudentName = reportData.studentName.trim();
+  const safeStudentName = rawStudentName 
+    ? rawStudentName.replace(/\s+/g, '_').replace(/[\\/:*?"<>|]/g, '') 
+    : 'student_name';
+  const fileName = `${safeStudentName} (activity 1.1).pdf`;
 
   const handleCopyText = async () => {
     const fullText = [
@@ -117,6 +129,26 @@ export const PreviewToolbar: React.FC<PreviewToolbarProps> = ({
           <span className="hidden sm:inline">{isEditable ? 'Editing On' : 'Edit Text'}</span>
         </button>
 
+        {/* Teacher's Signature quick toggle */}
+        {onToggleTeacherSignature && (
+          <button
+            type="button"
+            id="toggle-teacher-signature-toolbar-btn"
+            onClick={onToggleTeacherSignature}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer border ${
+              reportData.showTeacherSignature
+                ? 'bg-blue-50 border-blue-200 text-blue-800 font-semibold'
+                : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50'
+            }`}
+            title={reportData.showTeacherSignature ? "Teacher's Signature added. Click to remove." : "Click to add Teacher's Signature section (Default: not added)"}
+          >
+            <PenLine className="w-3.5 h-3.5 text-blue-600" />
+            <span className="hidden sm:inline">
+              {reportData.showTeacherSignature ? "Teacher's Signature: Added" : "Add Teacher's Signature"}
+            </span>
+          </button>
+        )}
+
         {/* Copy Text */}
         <button
           type="button"
@@ -150,6 +182,20 @@ export const PreviewToolbar: React.FC<PreviewToolbarProps> = ({
 
       {/* Right side: Export & Print actions */}
       <div className="flex items-center gap-2">
+        {onRegenerate && (
+          <button
+            type="button"
+            id="regenerate-variation-btn"
+            disabled={isGenerating}
+            onClick={onRegenerate}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 transition-all cursor-pointer disabled:opacity-50"
+            title="Generate a brand new, completely different paragraph style and variation"
+          >
+            <Sparkles className={`w-3.5 h-3.5 text-amber-600 ${isGenerating ? 'animate-spin' : ''}`} />
+            <span>{isGenerating ? 'Rewriting...' : 'New Variation'}</span>
+          </button>
+        )}
+
         <button
           type="button"
           id="print-btn"
@@ -166,6 +212,7 @@ export const PreviewToolbar: React.FC<PreviewToolbarProps> = ({
           id="download-pdf-btn"
           disabled={isDownloading}
           onClick={onDownloadPdf}
+          title={`Download as ${fileName}`}
           className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white shadow-2xs transition-all cursor-pointer disabled:opacity-50"
         >
           {isDownloading ? (

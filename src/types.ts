@@ -16,6 +16,7 @@ export interface ReportData {
   headingColor?: string;
   title1Color?: string;
   title2Color?: string;
+  showTeacherSignature?: boolean;
 }
 
 export interface ActivityPreset {

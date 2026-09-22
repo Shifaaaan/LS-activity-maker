@@ -50,6 +50,7 @@
     display: none !important;
   }
 
+  #document-canvas-container,
   .print-document-container {
     padding: 0 !important;
     background: transparent !important;

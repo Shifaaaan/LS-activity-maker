@@ -9,6 +9,7 @@ import { PreviewToolbar } from './components/PreviewToolbar.tsx';
 import { OnboardingModal } from './components/OnboardingModal.tsx';
 import { exportElementToPdf } from './utils/pdfExport.ts';
 import { cleanStudentNotesAndTags, formatTopicsToStudentPhrase } from './utils/textUtils.ts';
+import { generateCombinatoricReport } from './utils/reportGenerator.ts';
 
 export default function App() {
   const [reportData, setReportData] = useState<ReportData>(INITIAL_TEMPLATE_REPORT);
@@ -123,7 +124,7 @@ export default function App() {
     showNotification('Generating personalized report grounded in class activity...', 'info');
 
     try {
-      const res = await fetch('/api/generate', {
+      const res = await fetch(`/api/generate?t=${Date.now()}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -150,39 +151,33 @@ export default function App() {
       if (result.paragraphs && Array.isArray(result.paragraphs)) {
         setReportData(prev => ({
           ...prev,
-          paragraphs: result.paragraphs,
+          paragraphs: result.paragraphs.map((p: string) => cleanStudentNotesAndTags(p)),
           activityTitle: result.activityTitle || prev.activityTitle,
         }));
         setHasGenerated(true);
         setCurrentStep(2);
-        showNotification('Personalized report generated and formatted in A4 Portrait!', 'success');
+        showNotification('Personalized report generated with unique variation!', 'success');
       }
     } catch (err) {
-      console.warn('API error, applying client-side dynamic generation:', err);
+      console.warn('API error, applying combinatoric unique generation:', err);
       
-      const rawDate = reportData.date || '22-09-2026';
-      const dateStr = rawDate.includes('September') ? rawDate : (rawDate === '22-09-2026' ? '22nd September 2026' : rawDate);
-      const spoke = reportData.gotChance === true;
-      const cleanedTopics = (reportData.topicsDiscussed || []).map(t => cleanStudentNotesAndTags(t)).filter(Boolean);
-      const topicsStr = formatTopicsToStudentPhrase(cleanedTopics);
-      const cleanedPrompt = cleanStudentNotesAndTags(activePrompt);
-      const customNote = cleanedPrompt ? ` I also mentioned ${cleanedPrompt.replace(/^I\s+(also\s+)?(talked|spoke|mentioned)\s+about\s+/i, '')}.` : '';
-
-      const fallbackParagraphs = [
-        `On ${dateStr}, our Ma’am conducted an exciting group formation and self-introduction activity for our class. Out of 59 students in total, 50 were present and divided into 6 groups of roughly 10 members according to our roll-number ranges (1–10, 11–20, 21–30, 31–40, 41–50, 51–59). We were given around 10 to 15 minutes to sit together with our group members, practice our self-introductions in English, and prepare for 3 students to be picked from each group to speak in front of the class.`,
-        spoke
-          ? `I was really thrilled and a little nervous when Ma’am selected me as one of the three students from our group to speak! When my turn came, I stood in front of all 50 classmates and introduced myself. I talked about ${topicsStr}.${customNote} Practicing with my roll-number friends just before going up gave me a lot of courage and helped me speak clearly without getting stuck.`
-          : `Even though I wasn't among the three students picked to speak on stage, I had a really great time with my group. For 15 minutes, all of us in our roll-number group sat together and took turns practicing our introductions in English.${customNote} We helped each other correct mistakes, laughed together, and cheered for our three friends who went up to the front.`,
-        `Through this activity, I learned many valuable things from our Ma’am. She explained that we should always be honest about our real weaknesses instead of pretending to be perfect, which is very helpful for future job interviews. She also told us not to start with "Myself..." when introducing ourselves. Overall, it was a super fun and interactive session that helped reduce my stage fear and made me much more confident to speak in English.`
-      ];
+      const dynamicReport = generateCombinatoricReport({
+        date: reportData.date,
+        studentName: reportData.studentName,
+        activityTitle: reportData.activityTitle,
+        gotChance: reportData.gotChance,
+        topicsDiscussed: reportData.topicsDiscussed,
+        customDetails: activePrompt,
+        prompt: activePrompt,
+      });
 
       setReportData(prev => ({
         ...prev,
-        paragraphs: fallbackParagraphs.map(p => cleanStudentNotesAndTags(p))
+        paragraphs: dynamicReport.paragraphs,
       }));
       setHasGenerated(true);
       setCurrentStep(2);
-      showNotification('Formatted into balanced 3-paragraph academic reflection.', 'success');
+      showNotification('Generated fresh personalized academic reflection.', 'success');
     } finally {
       setIsGenerating(false);
     }
@@ -213,7 +208,7 @@ export default function App() {
     }));
 
     try {
-      const res = await fetch('/api/generate', {
+      const res = await fetch(`/api/generate?t=${Date.now()}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -246,21 +241,21 @@ export default function App() {
       }
     } catch (err) {
       console.warn('Lucky API fallback:', err);
-      const rawDate = reportData.date || '22-09-2026';
-      const dateStr = rawDate.includes('September') ? rawDate : (rawDate === '22-09-2026' ? '22nd September 2026' : rawDate);
-      const fallbackParagraphs = [
-        `On ${dateStr}, our Ma’am conducted an exciting group formation and self-introduction activity for our class. There were 50 students present out of 59, and we were divided into 6 groups based on our roll numbers (1–10, 11–20, 21–30, 31–40, 41–50, and 51–59). We were given around 10 to 15 minutes to sit together with our group members, practice our self-introductions in English, and prepare for 3 of us being selected to speak in front of the whole class.`,
-        randomGotChance
-          ? `I was really excited and slightly nervous when Ma’am selected me as one of the three students from our group to speak! When my turn came, I stood up in front of all 50 classmates and introduced myself. I talked about wanting to become a Software Engineer, my hobbies, and my strengths and weaknesses. Practicing with my roll-number friends just before going up gave me a lot of courage and helped me speak clearly without getting stuck.`
-          : `Even though I wasn't among the three students picked to go up on stage, I had a really great time in our group. For the 15 minutes of preparation time, all of us in our roll-number group sat together and took turns practicing our self-introductions in English. We helped each other correct small mistakes, laughed together, and cheered enthusiastically when our three group friends went up to the front to speak.`,
-        `Through this activity, I learned many valuable things from our Ma’am. She explained that we should always be honest about our real weaknesses instead of pretending to be perfect, because admitting areas where we need improvement shows genuine self-awareness in job interviews. She also reminded us not to start with "Myself..." and gave us great tips on how to speak with confidence. It was a really enjoyable session that helped reduce my stage fear and made me excited for upcoming activities.`
-      ];
+      const dynamicReport = generateCombinatoricReport({
+        date: reportData.date || '22-09-2026',
+        studentName: randomName,
+        activityTitle: reportData.activityTitle,
+        gotChance: randomGotChance,
+        topicsDiscussed: sampleTopics,
+        customDetails: generatedPromptText,
+      });
+
       setReportData(prev => ({ 
         ...prev, 
         studentName: randomName,
         gotChance: randomGotChance,
         topicsDiscussed: sampleTopics,
-        paragraphs: fallbackParagraphs.map(p => cleanStudentNotesAndTags(p))
+        paragraphs: dynamicReport.paragraphs
       }));
       setHasGenerated(true);
       setCurrentStep(2);
@@ -287,8 +282,11 @@ export default function App() {
     setCurrentStep(3);
     setDownloadStatus('Preparing PDF...');
 
-    const safeName = reportData.studentName.trim().replace(/[^a-zA-Z0-9_-]/g, '_') || 'Student';
-    const fileName = `CEK_Report_${safeName}_Activity_1_1.pdf`;
+    const rawStudentName = reportData.studentName.trim();
+    const safeStudentName = rawStudentName 
+      ? rawStudentName.replace(/\s+/g, '_').replace(/[\\/:*?"<>|]/g, '') 
+      : 'student_name';
+    const fileName = `${safeStudentName} (activity 1.1).pdf`;
 
     try {
       const success = await exportElementToPdf(
@@ -460,6 +458,9 @@ export default function App() {
                 onZoomChange={setZoom}
                 reportData={reportData}
                 onToggleOrientation={handleToggleOrientation}
+                onRegenerate={() => handleGenerate()}
+                isGenerating={isGenerating}
+                onToggleTeacherSignature={() => setReportData(prev => ({ ...prev, showTeacherSignature: !prev.showTeacherSignature }))}
               />
 
               {/* Exact A4 Aspect Ratio Document Canvas Container */}

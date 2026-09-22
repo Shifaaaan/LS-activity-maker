@@ -14,7 +14,8 @@ import {
   School,
   ChevronDown,
   ChevronUp,
-  Pipette
+  Pipette,
+  PenLine
 } from 'lucide-react';
 import { ReportData } from '../types.ts';
 import { 
@@ -136,6 +137,13 @@ export const PromptForm: React.FC<PromptFormProps> = ({
           <span>Appears on document as:</span>
           <span className="font-semibold text-stone-800 font-serif">
             {data.studentName.trim() ? `Your Name: ${data.studentName}` : 'Your Name: ____________________'}
+          </span>
+        </div>
+
+        <div className="mt-2 pt-2 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500 px-0.5">
+          <span>Saved PDF file name:</span>
+          <span className="font-mono text-[10.5px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+            {data.studentName.trim() ? `${data.studentName.trim().replace(/\s+/g, '_').replace(/[\\/:*?"<>|]/g, '')} (activity 1.1).pdf` : 'student_name (activity 1.1).pdf'}
           </span>
         </div>
       </div>
@@ -266,7 +274,7 @@ export const PromptForm: React.FC<PromptFormProps> = ({
                 type="text"
                 value={data.department}
                 onChange={(e) => onDataChange({ department: e.target.value })}
-                placeholder="DEPARTMENT OF COMPUTER SCIENCE"
+                placeholder="DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING"
                 className="w-full px-3 py-2 bg-white text-xs font-bold tracking-normal uppercase border border-stone-200 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition-all mb-2 shadow-2xs"
                 style={{ color: data.title2Color || '#000000' }}
               />
@@ -339,6 +347,9 @@ export const PromptForm: React.FC<PromptFormProps> = ({
                   placeholder="22-09-2026"
                   className="w-full px-3 py-2 bg-stone-50 hover:bg-stone-100/60 focus:bg-white text-xs font-medium text-stone-900 border border-stone-200 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
                 />
+                <p className="text-[10px] text-stone-500 mt-1 leading-tight">
+                  Activity held: <span className="font-semibold text-stone-700">19-09-2026</span> • Submission: <span className="font-semibold text-stone-700">{data.date || '22-09-2026'}</span>
+                </p>
               </div>
             </div>
 
@@ -688,6 +699,93 @@ export const PromptForm: React.FC<PromptFormProps> = ({
               );
             })}
           </div>
+        </div>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          CARD 5: TEACHER'S REMARKS & SIGNATURE FOOTER
+          Includes Teacher's Remarks (dotted line) on left and Teacher's Signature (solid line) on right
+          ───────────────────────────────────────────────────────────── */}
+      <div 
+        id="teacher-signature-card" 
+        className="bg-white rounded-2xl border border-stone-200/90 p-5 shadow-[0_2px_10px_rgba(0,0,0,0.03)] transition-all"
+      >
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-stone-900 text-white font-mono text-[10px] font-bold">
+              5
+            </span>
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-stone-500">
+              Teacher's Remarks & Signature
+            </span>
+          </div>
+          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full border ${
+            data.showTeacherSignature !== false
+              ? 'text-blue-700 bg-blue-50 border-blue-200 font-semibold' 
+              : 'text-stone-600 bg-stone-100 border-stone-200'
+          }`}>
+            {data.showTeacherSignature !== false ? 'Standard Format: Enabled' : 'Omitted'}
+          </span>
+        </div>
+
+        <h3 className="text-sm font-semibold text-stone-900 mb-1">
+          Teacher's Remarks & Signature Footer
+        </h3>
+        <p className="text-xs text-stone-500 mb-3.5">
+          Controls the bottom footer inside the border: Teacher's Remarks with dotted line on the left, and Teacher's Signature with solid line on the right.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <button
+            type="button"
+            id="teacher-signature-yes-btn"
+            onClick={() => onDataChange({ showTeacherSignature: true })}
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-start gap-2.5 ${
+              data.showTeacherSignature !== false
+                ? 'border-blue-600 bg-blue-50/60 shadow-2xs ring-1 ring-blue-600'
+                : 'border-stone-200 bg-stone-50/50 hover:bg-stone-100/70'
+            }`}
+          >
+            <div className={`w-4 h-4 rounded-full border mt-0.5 flex items-center justify-center shrink-0 ${
+              data.showTeacherSignature !== false ? 'border-blue-600 bg-blue-600 text-white' : 'border-stone-400 bg-white'
+            }`}>
+              {data.showTeacherSignature !== false && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+            </div>
+            <div>
+              <span className="text-xs font-semibold text-stone-900 block flex items-center gap-1.5">
+                <PenLine className="w-3.5 h-3.5 text-blue-600" />
+                <span>Yes, include Footer (Standard)</span>
+              </span>
+              <span className="text-[11px] text-stone-500 leading-tight block mt-0.5">
+                Includes Teacher's Remarks (dotted line) & Signature (solid line) at the bottom.
+              </span>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            id="teacher-signature-no-btn"
+            onClick={() => onDataChange({ showTeacherSignature: false })}
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-start gap-2.5 ${
+              data.showTeacherSignature === false
+                ? 'border-blue-600 bg-blue-50/60 shadow-2xs ring-1 ring-blue-600'
+                : 'border-stone-200 bg-stone-50/50 hover:bg-stone-100/70'
+            }`}
+          >
+            <div className={`w-4 h-4 rounded-full border mt-0.5 flex items-center justify-center shrink-0 ${
+              data.showTeacherSignature === false ? 'border-blue-600 bg-blue-600 text-white' : 'border-stone-400 bg-white'
+            }`}>
+              {data.showTeacherSignature === false && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+            </div>
+            <div>
+              <span className="text-xs font-semibold text-stone-900 block">
+                No, leave bottom blank
+              </span>
+              <span className="text-[11px] text-stone-500 leading-tight block mt-0.5">
+                Leaves the bottom 15–20% completely empty with no footer lines.
+              </span>
+            </div>
+          </button>
         </div>
       </div>
 

@@ -34,7 +34,7 @@ export const DocumentSheet = forwardRef<HTMLDivElement, DocumentSheetProps>(
             height: isLandscape ? '210mm' : '297mm',
             aspectRatio: isLandscape ? '297 / 210' : '210 / 297',
             boxSizing: 'border-box',
-            padding: isLandscape ? '10mm 12mm' : '15mm 15mm',
+            padding: isLandscape ? '10mm 12mm' : '12mm 14mm',
             transform: scale !== 1 ? `scale(${scale})` : undefined,
             transformOrigin: 'top center',
             boxShadow: '0 8px 30px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06)',
@@ -49,20 +49,20 @@ export const DocumentSheet = forwardRef<HTMLDivElement, DocumentSheetProps>(
             style={{
               border: `3.5px solid ${currentBorderColor}`,
               boxSizing: 'border-box',
-              padding: isLandscape ? '8mm 10mm 6mm 10mm' : '12mm 14mm 10mm 14mm',
+              padding: isLandscape ? '8mm 10mm 6mm 10mm' : '10mm 12mm 8mm 12mm',
               overflow: 'hidden',
             }}
           >
-            {/* Top Block: College Header, Subject & Student Info */}
+            {/* Top Content Block: Header, Subject, Student, Title, and Paragraphs */}
             <div className="w-full">
               {/* College, Department, Batch */}
               <div className="text-center space-y-0.5">
                 <h1 
                   id="report-college-name"
-                  className={`${isLandscape ? 'text-[14pt]' : 'text-[15.5pt]'} leading-tight font-bold tracking-wide uppercase underline decoration-1 underline-offset-3`}
+                  className={`${isLandscape ? 'text-[13.5pt]' : 'text-[15pt]'} leading-tight font-bold tracking-wide uppercase underline decoration-1 underline-offset-3`}
                   style={{ 
                     fontFamily: FONT_TIMES,
-                    color: data.title1Color || '#000000'
+                    color: data.title1Color || '#234994'
                   }}
                 >
                   {data.college}
@@ -70,10 +70,10 @@ export const DocumentSheet = forwardRef<HTMLDivElement, DocumentSheetProps>(
 
                 <h2 
                   id="report-department-name"
-                  className={`${isLandscape ? 'text-[11.5pt]' : 'text-[12.5pt]'} leading-tight font-bold tracking-normal uppercase underline decoration-1 underline-offset-3 pt-0.5`}
+                  className={`${isLandscape ? 'text-[11pt]' : 'text-[12pt]'} leading-tight font-bold tracking-normal uppercase underline decoration-1 underline-offset-3 pt-0.5`}
                   style={{ 
                     fontFamily: FONT_TIMES,
-                    color: data.title2Color || '#000000'
+                    color: data.title2Color || '#234994'
                   }}
                 >
                   {data.department}
@@ -81,37 +81,54 @@ export const DocumentSheet = forwardRef<HTMLDivElement, DocumentSheetProps>(
 
                 <h3 
                   id="report-batch-name"
-                  className={`${isLandscape ? 'text-[10.5pt]' : 'text-[11.5pt]'} leading-tight font-bold tracking-wider uppercase pt-0.5 text-black`}
+                  className={`${isLandscape ? 'text-[10pt]' : 'text-[11pt]'} leading-tight font-bold tracking-wider uppercase mt-3.5 text-black`}
                   style={{ fontFamily: FONT_TIMES }}
                 >
                   {data.batch}
                 </h3>
               </div>
 
-              {/* Subject & Student Info Bar */}
+              {/* Subject & Student Info */}
               {isLandscape ? (
-                <div className="flex items-start justify-between mt-3 text-black text-[10pt] leading-tight px-1" style={{ fontFamily: FONT_TIMES }}>
-                  <div className="space-y-0.5">
-                    <p id="report-student-name" className="font-bold">
-                      Your Name: {studentDisplayName}
-                    </p>
-                    <p id="report-submission-date" className="font-bold">
-                      Date: {data.date}
-                    </p>
+                <>
+                  <div className="flex items-start justify-between mt-2.5 text-black text-[10pt] leading-tight px-1" style={{ fontFamily: FONT_TIMES }}>
+                    <div className="space-y-0.5">
+                      <p id="report-student-name" className="font-bold">
+                        Your Name: {studentDisplayName}
+                      </p>
+                      <p id="report-submission-date" className="font-bold">
+                        Date: {data.date}
+                      </p>
+                    </div>
+                    <div className="text-right space-y-0.5">
+                      <p id="report-subject-code" className="font-bold">
+                        Subject code & Name: {data.subjectCode}
+                      </p>
+                      <p id="report-subject-title" className="font-bold">
+                        {data.subjectName}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right space-y-0.5">
-                    <p id="report-subject-code" className="font-bold">
-                      Subject code & Name: {data.subjectCode}
-                    </p>
-                    <p id="report-subject-title" className="font-bold">
-                      {data.subjectName}
-                    </p>
+
+                  {/* Activity Title (Landscape: Left-Aligned) */}
+                  <div className="text-left mt-2">
+                    <h4 
+                      id="report-activity-title"
+                      className="text-[11pt] leading-snug font-bold uppercase underline decoration-1 underline-offset-2"
+                      style={{ 
+                        color: currentHeadingColor,
+                        fontFamily: FONT_TIMES,
+                        textDecorationColor: currentHeadingColor
+                      }}
+                    >
+                      {data.activityTitle}
+                    </h4>
                   </div>
-                </div>
+                </>
               ) : (
                 <>
-                  {/* Subject Code & Name (Centered) */}
-                  <div className="text-center mt-3.5 space-y-0.5 text-black">
+                  {/* Subject Code & Name (Centered, Bold, Black) */}
+                  <div className="text-center mt-3 space-y-0.5 text-black">
                     <p 
                       id="report-subject-code"
                       className="text-[11pt] leading-tight font-bold"
@@ -128,8 +145,12 @@ export const DocumentSheet = forwardRef<HTMLDivElement, DocumentSheetProps>(
                     </p>
                   </div>
 
-                  {/* Student Name & Date (Left Aligned) */}
-                  <div className="mt-3.5 space-y-0.5 text-black">
+                  {/* Student Name & Date (Left Aligned, Bold, Black) */}
+                  {/* 3 lines gap above the name and 3 lines gap below the date */}
+                  <div 
+                    className="space-y-0.5 text-black text-left"
+                    style={{ marginTop: '48pt', marginBottom: '48pt' }}
+                  >
                     <p 
                       id="report-student-name"
                       className="text-[11pt] leading-tight font-bold"
@@ -145,83 +166,94 @@ export const DocumentSheet = forwardRef<HTMLDivElement, DocumentSheetProps>(
                       Date: {data.date}
                     </p>
                   </div>
+
+                  {/* Activity Title (Left Aligned, Maroon, Underlined) */}
+                  <div className="text-left">
+                    <h4 
+                      id="report-activity-title"
+                      className="text-[11.5pt] leading-snug font-bold uppercase underline decoration-1 underline-offset-2"
+                      style={{ 
+                        color: currentHeadingColor,
+                        fontFamily: FONT_TIMES,
+                        textDecorationColor: currentHeadingColor
+                      }}
+                    >
+                      {data.activityTitle}
+                    </h4>
+                  </div>
                 </>
               )}
 
-              {/* Activity Title (Heading Color: Maroon #800020, Navy #234994, or Black #111827) */}
-              <div className={isLandscape ? 'mt-2.5' : 'mt-3.5'}>
-                <h4 
-                  id="report-activity-title"
-                  className={`${isLandscape ? 'text-[11pt]' : 'text-[12pt]'} leading-snug font-bold uppercase underline decoration-1 underline-offset-2`}
-                  style={{ 
-                    color: currentHeadingColor,
-                    fontFamily: FONT_TIMES,
-                    textDecorationColor: currentHeadingColor
-                  }}
-                >
-                  {data.activityTitle}
-                </h4>
+              {/* Reflection Paragraphs: Start directly after Activity Title with an enter-key shift (mt-2.5), 12pt Times New Roman, 1.5 line height, Justified */}
+              <div 
+                id="report-body-block"
+                className={`w-full text-black ${isLandscape ? 'mt-2' : 'mt-2.5'}`}
+              >
+                {data.paragraphs.map((para, idx) => (
+                  <div key={idx} className="relative group">
+                    {isEditable ? (
+                      <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) => onUpdateParagraph?.(idx, e.currentTarget.textContent || '')}
+                        id={`report-paragraph-editable-${idx}`}
+                        className="text-[12pt] text-black transition-colors outline-none focus:bg-blue-50/50 hover:bg-amber-50/40 p-1 -m-1 rounded cursor-text"
+                        style={{
+                          fontFamily: FONT_TIMES,
+                          fontSize: '12pt',
+                          textAlign: 'justify',
+                          textJustify: 'inter-word',
+                          lineHeight: 1.5,
+                          marginBottom: idx < data.paragraphs.length - 1 ? (isLandscape ? '8pt' : '10.5pt') : '0',
+                        }}
+                      >
+                        {para}
+                      </div>
+                    ) : (
+                      <p
+                        id={`report-paragraph-${idx}`}
+                        className="text-[12pt] text-black"
+                        style={{
+                          fontFamily: FONT_TIMES,
+                          fontSize: '12pt',
+                          textAlign: 'justify',
+                          textJustify: 'inter-word',
+                          lineHeight: 1.5,
+                          marginBottom: idx < data.paragraphs.length - 1 ? (isLandscape ? '8pt' : '10.5pt') : '0',
+                        }}
+                      >
+                        {para}
+                      </p>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* One Single Block: Paragraphs in 12pt Times New Roman, Line Spacing 1.5 */}
-            <div 
-              id="report-body-block"
-              className={`w-full text-black ${isLandscape ? 'mt-2' : 'mt-3'}`}
-            >
-              {data.paragraphs.map((para, idx) => (
-                <div key={idx} className="relative group">
-                  {isEditable ? (
-                    <div
-                      contentEditable
-                      suppressContentEditableWarning
-                      onBlur={(e) => onUpdateParagraph?.(idx, e.currentTarget.textContent || '')}
-                      id={`report-paragraph-editable-${idx}`}
-                      className="text-[12pt] text-black transition-colors outline-none focus:bg-blue-50/50 hover:bg-amber-50/40 p-1 -m-1 rounded cursor-text"
-                      style={{
-                        fontFamily: FONT_TIMES,
-                        fontSize: '12pt',
-                        textAlign: 'justify',
-                        textJustify: 'inter-word',
-                        lineHeight: 1.5,
-                        marginBottom: idx < data.paragraphs.length - 1 ? (isLandscape ? '10pt' : '12pt') : '0',
-                      }}
-                    >
-                      {para}
-                    </div>
-                  ) : (
-                    <p
-                      id={`report-paragraph-${idx}`}
-                      className="text-[12pt] text-black"
-                      style={{
-                        fontFamily: FONT_TIMES,
-                        fontSize: '12pt',
-                        textAlign: 'justify',
-                        textJustify: 'inter-word',
-                        lineHeight: 1.5,
-                        marginBottom: idx < data.paragraphs.length - 1 ? (isLandscape ? '10pt' : '12pt') : '0',
-                      }}
-                    >
-                      {para}
-                    </p>
-                  )}
+            {/* Bottom Footer Block: Teacher's Remarks (Left with dotted line) & Teacher's Signature (Right with solid line) */}
+            {data.showTeacherSignature !== false && (
+              <div 
+                id="report-footer-block"
+                className="w-full flex justify-between items-end pt-4 pb-0.5"
+                style={{ fontFamily: FONT_TIMES }}
+              >
+                {/* Teacher's Remarks with dotted line */}
+                <div className="text-left">
+                  <p className="text-[10.5pt] font-bold text-black tracking-wide">
+                    Teacher's Remarks:
+                  </p>
+                  <div className="w-56 sm:w-64 border-b border-dotted border-stone-400 mt-3.5" />
                 </div>
-              ))}
-            </div>
 
-            {/* Teacher Signature & Remarks Space (Leaves blank space for teacher to sign and write approved) */}
-            <div 
-              id="teacher-signature-block"
-              className="mt-auto pt-3 flex justify-end items-end"
-            >
-              <div className="text-center" style={{ fontFamily: FONT_TIMES }}>
-                {/* Blank space for teacher's handwritten signature and remarks/approval */}
-                <div className="w-52 h-12 border-b border-black mb-1.5" />
-                <p className="text-[11pt] font-semibold text-black tracking-wide">
-                  Teacher's Signature
-                </p>
+                {/* Teacher's Signature with solid line */}
+                <div className="text-center">
+                  <div className="w-44 sm:w-48 border-b border-black mb-1" />
+                  <p className="text-[10.5pt] font-bold text-black tracking-wide">
+                    Teacher's Signature
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

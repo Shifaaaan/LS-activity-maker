@@ -9,7 +9,8 @@ function reportApiPlugin(): Plugin {
     name: 'report-api-plugin',
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
-        if (req.url === '/api/generate' && req.method === 'POST') {
+        const pathname = req.url ? req.url.split('?')[0] : '';
+        if (pathname === '/api/generate' && req.method === 'POST') {
           let body = '';
           req.on('data', chunk => { body += chunk; });
           req.on('end', async () => {
@@ -28,7 +29,7 @@ function reportApiPlugin(): Plugin {
           return;
         }
 
-        if (req.url === '/api/lucky' && req.method === 'POST') {
+        if (pathname === '/api/lucky' && req.method === 'POST') {
           let body = '';
           req.on('data', chunk => { body += chunk; });
           req.on('end', async () => {

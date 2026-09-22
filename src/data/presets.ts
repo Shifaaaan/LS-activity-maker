@@ -137,7 +137,7 @@ export const DESIGN_TEMPLATES = [
 
 export const INITIAL_TEMPLATE_REPORT: ReportData = {
   college: 'COLLEGE OF ENGINEERING KARUNAGAPPALLY',
-  department: 'DEPARTMENT OF COMPUTER SCIENCE',
+  department: 'DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING',
   batch: 'BATCH-B',
   subjectCode: 'UCHUT128',
   subjectName: 'Life Skills & Professional Communication',
@@ -145,9 +145,9 @@ export const INITIAL_TEMPLATE_REPORT: ReportData = {
   date: '22-09-2026',
   activityTitle: 'GROUP FORMATION AND SELF-INTRODUCTION REPORT (ACTIVITY 1.1)',
   paragraphs: [
-    'On 22nd September 2026, our Ma’am conducted an exciting group formation and self-introduction activity for our class. There were 50 students present out of 59, and we were divided into 6 groups according to our roll numbers (1–10, 11–20, 21–30, 31–40, 41–50, and 51–59). We were given around 10 to 15 minutes to sit together with our group members, practice our self-introductions in English, and prepare for 3 of us being selected to speak in front of the whole class.',
-    'During our group practice time, all of us in our roll-number group sat together and took turns practicing our self-introductions in English. We helped each other correct small phrasing mistakes, laughed together, and encouraged our benchmates not to feel shy or nervous. It was really fun practicing together and building each other’s confidence before the stage presentations began.',
-    'Through this activity, I learned many valuable things from our Ma’am. She taught us to be honest about our real strengths and weaknesses instead of pretending to be perfect, which is very important for future placement interviews. She also reminded us not to start with "Myself..." when introducing ourselves. Overall, the session was super interactive and fun, and it really helped reduce my stage fear for future presentations.'
+    'On 19th September 2026, our Ma’am conducted an engaging group formation and self-introduction activity during our Life Skills class. Although our batch comprises 59 students, 9 were absent, leaving 50 of us present to be divided into 6 roll-number groups (1–10, 11–20, 21–30, 31–40, 41–50, and 51–59). We were given 10 to 15 minutes to sit together with our group members, practice speaking in English, and prepare before 3 students from each group were selected to present to the entire class.',
+    'During our group practice time, all 10 of us in our roll-number group sat together and took turns practicing our self-introductions in English. We helped each other correct small phrasing mistakes, laughed together, and encouraged our benchmates not to feel shy or nervous. It was really fun practicing together and building each other’s confidence before the stage presentations began.',
+    'Through this activity, I learned many valuable things from our Ma’am. She taught us to be honest about our real strengths and weaknesses instead of pretending to be perfect, which is very important for future placement interviews. She also reminded us not to start with "Myself..." when introducing ourselves. Overall, the session held on the 19th was memorable and interactive, and I am glad to submit this report on 22nd September 2026.'
   ],
   orientation: 'portrait', // Paper size: A4, Orientation: Portrait (210 × 297 mm)
   gotChance: null,
@@ -155,8 +155,9 @@ export const INITIAL_TEMPLATE_REPORT: ReportData = {
   customDetails: '',
   borderColor: '#234994', // Default CEK Navy
   headingColor: '#800020', // Default Academic Maroon
-  title1Color: '#000000', // Default Title 1 (College Name)
-  title2Color: '#000000', // Default Title 2 (Department Name)
+  title1Color: '#234994', // Default CEK Navy (matching college name in format)
+  title2Color: '#234994', // Default CEK Navy (matching department in format)
+  showTeacherSignature: true, // Default: Teacher's Remarks & Signature footer enabled
 };
 
 export const ACTIVITY_PRESETS: ActivityPreset[] = [

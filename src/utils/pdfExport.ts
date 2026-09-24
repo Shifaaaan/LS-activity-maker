@@ -19,29 +19,38 @@ export async function exportElementToPdf(
 
     // Wait for exact Times New Roman TTF and Google fonts to be loaded
     if (document.fonts) {
-      await document.fonts.ready;
+      try {
+        await Promise.all([
+          document.fonts.load('12pt "Times New Roman"'),
+          document.fonts.load('bold 12pt "Times New Roman"'),
+          document.fonts.load('12pt Tinos'),
+          document.fonts.ready
+        ]);
+      } catch {
+        await document.fonts.ready;
+      }
     }
 
     // Force page size to exact A4 portrait in mm: 210 x 297 mm
     const a4WidthMm = 210;
     const a4HeightMm = 297;
 
-    // Convert mm to standard CSS px at 96 DPI: 1 mm = 3.779527559 px
+    // Standard CSS px at 96 DPI: 1 mm = 3.779527559 px
     const a4WidthPx = Math.round(a4WidthMm * 3.779527559); // 794 px
     const a4HeightPx = Math.round(a4HeightMm * 3.779527559); // 1123 px
 
     // Create an isolated render sandbox attached to document.body
-    // Matching exact document-canvas-container dimensions to ensure consistent print-media rendering
+    // Placed offscreen with opacity 1 to guarantee full font rendering and layout calculation
     sandbox = document.createElement('div');
     sandbox.id = 'pdf-render-isolation-sandbox';
     sandbox.className = 'print-document-container';
     sandbox.style.position = 'fixed';
     sandbox.style.top = '0';
-    sandbox.style.left = '0';
-    sandbox.style.width = `${a4WidthPx + 40}px`;
-    sandbox.style.height = `${a4HeightPx + 40}px`;
-    sandbox.style.zIndex = '-99999';
-    sandbox.style.opacity = '0.001';
+    sandbox.style.left = '-10000px';
+    sandbox.style.width = `${a4WidthPx}px`;
+    sandbox.style.height = `${a4HeightPx}px`;
+    sandbox.style.zIndex = '-1';
+    sandbox.style.opacity = '1';
     sandbox.style.pointerEvents = 'none';
     sandbox.style.overflow = 'hidden';
     sandbox.style.backgroundColor = '#ffffff';
@@ -56,12 +65,12 @@ export async function exportElementToPdf(
     clone.style.position = 'absolute';
     clone.style.top = '0';
     clone.style.left = '0';
-    clone.style.width = `${a4WidthMm}mm`;
-    clone.style.minWidth = `${a4WidthMm}mm`;
-    clone.style.maxWidth = `${a4WidthMm}mm`;
-    clone.style.height = `${a4HeightMm}mm`;
-    clone.style.minHeight = `${a4HeightMm}mm`;
-    clone.style.maxHeight = `${a4HeightMm}mm`;
+    clone.style.width = `${a4WidthPx}px`;
+    clone.style.minWidth = `${a4WidthPx}px`;
+    clone.style.maxWidth = `${a4WidthPx}px`;
+    clone.style.height = `${a4HeightPx}px`;
+    clone.style.minHeight = `${a4HeightPx}px`;
+    clone.style.maxHeight = `${a4HeightPx}px`;
     clone.style.boxSizing = 'border-box';
 
     // Remove any active contentEditable borders or focus rings from the clone

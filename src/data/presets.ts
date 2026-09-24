@@ -145,9 +145,9 @@ export const INITIAL_TEMPLATE_REPORT: ReportData = {
   date: '22-09-2026',
   activityTitle: 'GROUP FORMATION AND SELF-INTRODUCTION REPORT (ACTIVITY 1.1)',
   paragraphs: [
-    'On 19th September 2026, our Ma’am conducted an engaging group formation and self-introduction activity during our Life Skills class. Although our batch comprises 59 students, 9 were absent, leaving 50 of us present to be divided into 6 roll-number groups (1–10, 11–20, 21–30, 31–40, 41–50, and 51–59). We were given 10 to 15 minutes to sit together with our group members, practice speaking in English, and prepare before 3 students from each group were selected to present to the entire class.',
-    'During our group practice time, all 10 of us in our roll-number group sat together and took turns practicing our self-introductions in English. We helped each other correct small phrasing mistakes, laughed together, and encouraged our benchmates not to feel shy or nervous. It was really fun practicing together and building each other’s confidence before the stage presentations began.',
-    'Through this activity, I learned many valuable things from our Ma’am. She taught us to be honest about our real strengths and weaknesses instead of pretending to be perfect, which is very important for future placement interviews. She also reminded us not to start with "Myself..." when introducing ourselves. Overall, the session held on the 19th was memorable and interactive, and I am glad to submit this report on 22nd September 2026.'
+    'On 19th September 2026, our Life Skills class had a group activity led by our Ma’am. Although our batch comprises 59 students, 9 were absent, leaving 50 of us present to form 6 roll-number groups. We were given 10 minutes to practice our introductions in English before 3 students from each group were picked to speak.',
+    'During our group practice time, all 10 of us sat together and took turns rehearsing our self-introductions in English. We helped each other correct small phrasing errors and cheered for our group representatives when they presented on stage.',
+    'Our Ma’am gave us valuable feedback, advising us to be honest about our real weaknesses in placement interviews and avoid saying "Myself...". It was a useful activity, and I am glad to submit this report on 22nd September 2026.'
   ],
   orientation: 'portrait', // Paper size: A4, Orientation: Portrait (210 × 297 mm)
   gotChance: null,
